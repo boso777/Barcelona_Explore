@@ -53,4 +53,15 @@ async function cercaShop(category) {
     
 }
 
+// active effect categories menu
+
+let links = document.querySelectorAll('.custom-tag');
+
+links.forEach(link => {
+  link.addEventListener('click', function() {
+
+    links.forEach(l => l.classList.remove('custom-tag-active'));
+    this.classList.add('custom-tag-active');
+  });
+});
 
