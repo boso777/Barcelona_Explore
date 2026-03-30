@@ -1,0 +1,126 @@
+:root {
+    --red: #E2725B;
+    --blue: #00539C;
+    --yellow: #FFD700;
+    --white: #FDFCFB;
+    --black: #000000;
+    --font1: 'Inter', sans-serif;
+    --font2: 'Plus Jakarta Sans', sans-serif;
+}
+
+body {
+    font-family: var(--font1);
+}
+
+p {
+    font-family: var(--font2);
+}
+
+.text-red {
+    color: var(--red) !important;
+}
+
+.text-blue {
+    color: var(--blue) !important;
+}
+
+.text-yellow {
+    color: var(--yellow) !important;
+}
+
+.text-white {
+    color: var(--white) !important;
+}
+
+.text-black {
+    color: var(--black) !important;
+}
+
+.bg-red {
+    background-color: var(--red) !important;
+}
+
+.bg-blue {
+    background-color: var(--blue) !important;
+}
+
+.bg-yellow {
+    background-color: var(--yellow) !important;
+}
+
+.bg-white {
+    background-color: var(--white) !important;
+}
+
+.bg-black {
+    background-color: var(--black) !important;
+}
+
+/* navbar */
+
+.container-custom {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+}
+
+.form-control {
+    border-radius: 50px;
+    font-size: 15px;
+    text-align: center;
+    padding-left: 0;
+    padding-right: 0;
+}
+
+.form-control::placeholder {
+    text-align: center;
+}
+
+input[type="search"]::-webkit-search-decoration,
+input[type="search"]::-webkit-search-cancel-button,
+input[type="search"]::-webkit-search-results-button,
+input[type="search"]::-webkit-search-results-decoration {
+    -webkit-appearance: none;
+}
+
+.form-control:focus {
+    box-shadow: none;
+}
+
+#map {
+    height: 100vh;
+    width: 100%;
+    padding: 0px !important;
+    margin: 0px !important;
+}
+
+/* categories */
+
+.custom-tag{
+    padding: 12px;
+    margin-left: 10px;
+    margin-right: 10px;
+    text-decoration: none;
+    color: rgba(0, 0, 0, 0.747);
+    text-align: center;
+    background-color: var(--white);
+    border-radius: 20px;
+}
+
+
+.elements-container{
+    position: fixed;   /* 1. La blocca sullo schermo */
+    top: 800px;            
+    left: 25%;           
+    width: 100%;       
+    height: 60px;
+    z-index: 1000;
+}
+
+.fa-placeholder::placeholder {
+    font-family: "Font Awesome 6 Free", "Font Awesome 5 Free";
+    font-weight: 900; 
+    font-style: normal;
+}
