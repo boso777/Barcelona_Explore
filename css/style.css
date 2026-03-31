@@ -119,15 +119,15 @@ input[type="search"]::-webkit-search-results-decoration {
     display: flex;
     align-items: center;
     justify-content: space-evenly;
-    padding: 10px 0px;
-    display: flex;
+    padding-top: 10px;
+    padding-bottom: 10px;
     margin: 0px 0px;
-    width: 30%;
 }
 
 
 .custom-tag{
-    padding: 12px;
+    display: flex;
+    padding: 6px 15px;
     margin-left: 10px;
     margin-right: 10px;
     text-decoration: none;
