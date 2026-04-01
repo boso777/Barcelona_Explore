@@ -1,5 +1,29 @@
 let searchbar = document.getElementById('search');
-let submit = document.getElementById('submit');
+let submit = document.getElementById('submitResearch');
+let links = document.querySelectorAll('.custom-tag');
+
+async function cercaShop(category) {
+    const baseUrl = "https://overpass.kumi.systems/api/interpreter";
+    const query = `[out:json];node["amenity"="${category}"](41.382, 2.165, 41.392, 2.175);out 100;`;
+    const urlDef = baseUrl + encodeURIComponent(query);
+    
+    try {
+        const response = await fetch(urlDef);
+        
+        // First control
+        if (!response.ok) {
+            throw new Error(`Errore Server: ${response.status}`);
+        }
+
+        const data = await response.json();
+        return data.elements || []; // Restituisci array vuoto se elements manca
+        
+    } catch (error) {
+        console.error("Errore nel recupero dati:", error);
+        return []; // control 2 (everytime he return an array)
+    }
+}
+
 
 // mappa di barcellona , zoom control spostato in basso a sx
 
@@ -23,7 +47,7 @@ submit.addEventListener('click', async () => {
 
     markersLayer.clearLayers();
     let categoria = searchbar.value.toLowerCase();    
-    findBySearchbar(categoria);
+    await findBySearchbar(categoria);
 
 });
 
@@ -48,29 +72,6 @@ async function findBySearchbar(cat){
 
 // chiamata api per json attivià barcellona, url dinamico in base ai dati passati in richiesta
 
-async function cercaShop(category) {
-    
-    const baseUrl = "https://overpass-api.de/api/interpreter?data=";
-    
-    const query = `[out:json];node["amenity"="${category}"](41.382, 2.165, 41.392, 2.175);out 100;`
-    
-    const urlDef = baseUrl + encodeURIComponent(query);
-    
-    try {
-        
-        // implementazione moderna - approfondire await;
-        const response = await fetch(urlDef); 
-        const data = await response.json();
-
-        return data.elements; 
-        
-    } catch (error) {
-        
-        console.error("Errore nel recupero dati:", error);
-        
-    }
-    
-}
 
 function findCoordinates(data) {
     
@@ -88,10 +89,11 @@ function findCoordinates(data) {
 
 // active effect categories menu
 
-let links = document.querySelectorAll('.custom-tag');
+
 
 links.forEach(link => {
     link.addEventListener('click', function() {
+        console.log('ciao');
         
         links.forEach(l => l.classList.remove('custom-tag-active'));
         this.classList.add('custom-tag-active');
