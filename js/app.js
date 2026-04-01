@@ -25,21 +25,18 @@ zone.forEach((el , i)  => {
 cityZone.addEventListener('click' , (el)=> {
     if(el.target.classList.contains('dropdown-item')){
         el.preventDefault();
-
         let selectedElement = el.target.getAttribute('data-name');
         dropdownZone.innerText = selectedElement;
     }
 })
 
 
-const quartiere = "Barri Gòtic";
+const quartiere = "";
 const category = "restaurant";
 
-const query = `[out:json];area["name"="Barcelona"]["admin_level"="8"]->.city;area["name"="${quartiere}"](area.city)->.searchArea;node["amenity"="${category}"](area.searchArea);out 100;`;
-console.log(query);
+const query = `[out:json];area["name"="Barcelona"]["admin_level"="8"]->.city;area["name"="${quartiere}"](area.city)->.searchArea;node["amenity"="bar"](area.searchArea);out 100;`;
 
 
-console.log(query);
 // fetch() a Overpass API
 
 
@@ -80,12 +77,13 @@ L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
 const markersLayer = L.layerGroup().addTo(map);
 
 L.control.zoom({position: 'bottomleft'}).addTo(map);
-console.log(L.control.zoom);
+
 
 // funzione richiesta
 
 //event listner con callback asincrona (aspetta che finisca l'operazione await per passare a step successivo)
 submit.addEventListener('click', async () => {
+console.log(quartiere);
     
     markersLayer.clearLayers();
     let categoria = searchbar.value.toLowerCase();    //funzione di ricerca value input
@@ -135,8 +133,6 @@ function findCoordinates(data) {
 
 links.forEach(link => {
     link.addEventListener('click', function() {
-        console.log('ciao');
-        
         links.forEach(l => l.classList.remove('custom-tag-active'));
         this.classList.add('custom-tag-active');
     });
