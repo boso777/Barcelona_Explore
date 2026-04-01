@@ -11,6 +11,8 @@ L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
 }).addTo(map);
 
 
+const markersLayer = L.layerGroup().addTo(map);
+
 L.control.zoom({position: 'bottomleft'}).addTo(map);
 console.log(L.control.zoom);
 
@@ -18,33 +20,30 @@ console.log(L.control.zoom);
 
 //event listner con callback asincrona (aspetta che finisca l'operazione await per passare a step successivo)
 submit.addEventListener('click', async () => {
-    let categoria = searchbar.value.toLowerCase();    
-    
-    let dataset = await cercaShop(categoria);
-    
-    let cordinates = findCoordinates(dataset);
-    
-    cordinates.forEach(cordinate => {
 
-        let circle = L.circle([Number(cordinate[0]),Number(cordinate[1])], {
+    markersLayer.clearLayers();
+    let categoria = searchbar.value.toLowerCase();    
+    findBySearchbar(categoria);
+
+});
+
+async function findBySearchbar(cat){
+
+    let dataset = await cercaShop(cat);
+    
+    let coordinates = findCoordinates(dataset);
+    
+    coordinates.forEach(coordinate => {
+
+        let circle = L.circle([Number(coordinate[0]),Number(coordinate[1])], {
         color: 'red',
         fillColor: '#f03',
         fillOpacity: 0.5,
         radius: 10
-    }).addTo(map);
+    }).addTo(markersLayer);
 
     });
 
-     
-});
-
-function findCoordinates(data) {
-    
-    return data.map(place => {
-        let latitude = place.lat;
-        let longitude = place.lon;
-        return [Number(latitude) , Number(longitude)];
-    });
 }
 
 // chiamata api per json attivià barcellona, url dinamico in base ai dati passati in richiesta
@@ -72,6 +71,20 @@ async function cercaShop(category) {
     }
     
 }
+
+function findCoordinates(data) {
+    
+    return data.map(place => {
+        let latitude = place.lat;
+        let longitude = place.lon;
+        return [Number(latitude) , Number(longitude)];
+    });
+}
+
+
+
+
+
 
 // active effect categories menu
 
