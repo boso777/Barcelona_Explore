@@ -2,17 +2,34 @@ let searchbar = document.getElementById('search');
 let submit = document.getElementById('submitResearch');
 let links = document.querySelectorAll('.custom-tag');
 let cityZone = document.getElementById('cityZone');
+let dropdownZone = document.getElementById('dropdownZone');
 
+
+// import local data from js element
 
 import { zone } from './neighboroud.js';
 
 
-zone.forEach(el => {
-    let newZone = document.createElement('div');
-    newZone.innerHTML = `<li><a class="dropdown-item">${el.name}</a></li>`
+// cicle for each element of the DB, create a section in the dropwdown menu
+
+zone.forEach((el , i)  => {
+    let newZone = document.createElement('li');
+    newZone.classList.add(`zoneSelector`)
+    newZone.innerHTML = `<a class="dropdown-item" data-name="${el.name}">${el.name}</a>`
     cityZone.appendChild(newZone);
 });
 
+
+// event listener on click added on father of dynamic generated list items(it works on the sons for the callback parameter el), check all the element with the class dropdown-item into the cityZone element (the html UL), it valorize the variable selectedElement with the target data and inject them into the menu button text.
+
+cityZone.addEventListener('click' , (el)=> {
+    if(el.target.classList.contains('dropdown-item')){
+        el.preventDefault();
+
+        let selectedElement = el.target.getAttribute('data-name');
+        dropdownZone.innerText = selectedElement;
+    }
+})
 
 
 const quartiere = "Barri Gòtic";

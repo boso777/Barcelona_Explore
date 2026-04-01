@@ -158,8 +158,20 @@ input[type="search"]::-webkit-search-results-decoration {
 
 #submitResearch:hover{
     scale: 1.1;
-    color: var(--red);
+    color: var(--red);  
 }
+
+
+/* fixed height for dropdown menu */
+
+.custom-heigt{
+    height: 300px;           
+    overflow-y: auto;        
+    overflow-x: hidden;      
+    min-width: 200px;        
+}
+
+
 
 @media screen and (max-width: 600px) {
 
