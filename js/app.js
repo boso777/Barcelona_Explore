@@ -3,7 +3,7 @@ let submit = document.getElementById('submitResearch');
 let links = document.querySelectorAll('.custom-tag');
 
 async function cercaShop(category) {
-    const baseUrl = "https://overpass.kumi.systems/api/interpreter";
+    const baseUrl = "https://overpass-api.de/api/interpreter?data=";
     const query = `[out:json];node["amenity"="${category}"](41.382, 2.165, 41.392, 2.175);out 100;`;
     const urlDef = baseUrl + encodeURIComponent(query);
     

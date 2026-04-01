@@ -115,7 +115,7 @@ input[type="search"]::-webkit-search-results-decoration {
 
 .custom-row-menu{
     border-radius: 20px;    
-    background-color: rgba(0, 0, 0, 0.714);
+    background-color: rgba(55, 55, 55, 0.627);
     display: flex;
     align-items: center;
     justify-content: space-evenly;
