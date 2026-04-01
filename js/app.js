@@ -1,6 +1,31 @@
 let searchbar = document.getElementById('search');
 let submit = document.getElementById('submitResearch');
 let links = document.querySelectorAll('.custom-tag');
+let cityZone = document.getElementById('cityZone');
+
+
+import { zone } from './neighboroud.js';
+
+
+zone.forEach(el => {
+    let newZone = document.createElement('div');
+    newZone.innerHTML = `<li><a class="dropdown-item">${el.name}</a></li>`
+    cityZone.appendChild(newZone);
+});
+
+
+
+const quartiere = "Barri Gòtic";
+const category = "restaurant";
+
+const query = `[out:json];area["name"="Barcelona"]["admin_level"="8"]->.city;area["name"="${quartiere}"](area.city)->.searchArea;node["amenity"="${category}"](area.searchArea);out 100;`;
+console.log(query);
+
+
+console.log(query);
+// fetch() a Overpass API
+
+
 
 async function cercaShop(category) {
     const baseUrl = "https://overpass-api.de/api/interpreter?data=";
@@ -14,7 +39,7 @@ async function cercaShop(category) {
         if (!response.ok) {
             throw new Error(`Errore Server: ${response.status}`);
         }
-
+        
         const data = await response.json();
         return data.elements || []; // Restituisci array vuoto se elements manca
         
@@ -44,30 +69,30 @@ console.log(L.control.zoom);
 
 //event listner con callback asincrona (aspetta che finisca l'operazione await per passare a step successivo)
 submit.addEventListener('click', async () => {
-
+    
     markersLayer.clearLayers();
-    let categoria = searchbar.value.toLowerCase();    
+    let categoria = searchbar.value.toLowerCase();    //funzione di ricerca value input
     await findBySearchbar(categoria);
-
+    
 });
 
 async function findBySearchbar(cat){
-
+    
     let dataset = await cercaShop(cat);
     
     let coordinates = findCoordinates(dataset);
     
     coordinates.forEach(coordinate => {
-
+        
         let circle = L.circle([Number(coordinate[0]),Number(coordinate[1])], {
-        color: 'red',
-        fillColor: '#f03',
-        fillOpacity: 0.5,
-        radius: 10
-    }).addTo(markersLayer);
-
+            color: 'red',
+            fillColor: '#f03',
+            fillOpacity: 0.5,
+            radius: 10
+        }).addTo(markersLayer);
+        
     });
-
+    
 }
 
 // chiamata api per json attivià barcellona, url dinamico in base ai dati passati in richiesta
