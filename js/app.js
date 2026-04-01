@@ -3,65 +3,13 @@ let submit = document.getElementById('submitResearch');
 let links = document.querySelectorAll('.custom-tag');
 let cityZone = document.getElementById('cityZone');
 let dropdownZone = document.getElementById('dropdownZone');
-
+let dropdownCat = document.getElementById('dropdownCat');
+let categoryContainer = document.getElementById('categoryContainer');
 
 // import local data from js element
 
 import { zone } from './neighboroud.js';
-
-
-// cicle for each element of the DB, create a section in the dropwdown menu
-
-zone.forEach((el , i)  => {
-    let newZone = document.createElement('li');
-    newZone.classList.add(`zoneSelector`)
-    newZone.innerHTML = `<a class="dropdown-item" data-name="${el.name}">${el.name}</a>`
-    cityZone.appendChild(newZone);
-});
-
-
-// event listener on click added on father of dynamic generated list items(it works on the sons for the callback parameter el), check all the element with the class dropdown-item into the cityZone element (the html UL), it valorize the variable selectedElement with the target data and inject them into the menu button text.
-
-cityZone.addEventListener('click' , (el)=> {
-    if(el.target.classList.contains('dropdown-item')){
-        el.preventDefault();
-        let selectedElement = el.target.getAttribute('data-name');
-        dropdownZone.innerText = selectedElement;
-    }
-})
-
-
-const quartiere = "";
-const category = "restaurant";
-
-const query = `[out:json];area["name"="Barcelona"]["admin_level"="8"]->.city;area["name"="${quartiere}"](area.city)->.searchArea;node["amenity"="bar"](area.searchArea);out 100;`;
-
-
-// fetch() a Overpass API
-
-
-
-async function cercaShop(category) {
-    const baseUrl = "https://overpass-api.de/api/interpreter?data=";
-    const query = `[out:json];node["amenity"="${category}"](41.382, 2.165, 41.392, 2.175);out 100;`;
-    const urlDef = baseUrl + encodeURIComponent(query);
-    
-    try {
-        const response = await fetch(urlDef);
-        
-        // First control
-        if (!response.ok) {
-            throw new Error(`Errore Server: ${response.status}`);
-        }
-        
-        const data = await response.json();
-        return data.elements || []; // Restituisci array vuoto se elements manca
-        
-    } catch (error) {
-        console.error("Errore nel recupero dati:", error);
-        return []; // control 2 (everytime he return an array)
-    }
-}
+import { cat } from './categories.js';
 
 
 // mappa di barcellona , zoom control spostato in basso a sx
@@ -79,55 +27,105 @@ const markersLayer = L.layerGroup().addTo(map);
 L.control.zoom({position: 'bottomleft'}).addTo(map);
 
 
-// funzione richiesta
+let selectedZone = "";
+let selectedCategory = "";
 
-//event listner con callback asincrona (aspetta che finisca l'operazione await per passare a step successivo)
-submit.addEventListener('click', async () => {
-console.log(quartiere);
-    
-    markersLayer.clearLayers();
-    let categoria = searchbar.value.toLowerCase();    //funzione di ricerca value input
-    await findBySearchbar(categoria);
-    
+// 1 - cicle for each element of the DB, create -> appends childs // fix-it make a function for both
+
+
+zone.forEach((el)  => {
+    let newZone = document.createElement('li');
+    newZone.classList.add(`zoneSelector`)
+    newZone.innerHTML = `<a class="dropdown-item zoneItem" data-name="${el.name}">${el.name}</a>`
+    cityZone.appendChild(newZone);
 });
 
-async function findBySearchbar(cat){
-    
-    let dataset = await cercaShop(cat);
-    
-    let coordinates = findCoordinates(dataset);
-    
-    coordinates.forEach(coordinate => {
+cat.forEach((el)  => {
+    let newCat = document.createElement('li');
+    newCat.classList.add(`catSelector`)
+    newCat.innerHTML = `<a class="dropdown-item catItem" data-name="${el.name}">${el.name}</a>`
+    categoryContainer.appendChild(newCat);
+});
+
+
+
+// 2-  event listener on click capture the inpute of the user a modify the dropdown text //  fix-it make a function for both
+
+cityZone.addEventListener('click' , (el)=> {
+    if(el.target.classList.contains('zoneItem')){
         
-        let circle = L.circle([Number(coordinate[0]),Number(coordinate[1])], {
-            color: 'red',
-            fillColor: '#f03',
-            fillOpacity: 0.5,
-            radius: 10
-        }).addTo(markersLayer);
-        
-    });
+        el.preventDefault();
+        let selectedElement = el.target.getAttribute('data-name');
+        dropdownZone.innerHTML = selectedElement;
+    }
+})
+
+
+categoryContainer.addEventListener('click' , (el)=>{
+    if(el.target.classList.contains('catItem')){
+
+        el.preventDefault();
+        let selectedCat = el.target.getAttribute('data-name');
+        dropdownCat.innerHTML = selectedCat;
+    }
+})
+
+
+
+// 3 event listner con callback asincrona (aspetta che finisca l'operazione await per passare a step successivo)
+
+submit.addEventListener('click', async () => {
+
+    markersLayer.clearLayers();
+    selectedCategory = dropdownCat.innerHTML;
+    selectedZone = dropdownZone.innerHTML;
     
-}
+    const query = `[out:json];area["name"="Barcelona"]["admin_level"="8"]->.city;area["name"="${selectedZone}"](area.city)->.searchArea;node["amenity"="${selectedCategory}"](area.searchArea);out 10;`;
+    
+    const baseUrl = "https://overpass-api.de/api/interpreter?data=";
+    
+    const urlDef = baseUrl + encodeURIComponent(query);
+
+// fix-it continuare da qui, dati salvati in data
+
+    let data = await cercaShop(urlDef);
+    console.log(data);
+});
+
+
+
+
+
+
+// fetch() a Overpass API
 
 // chiamata api per json attivià barcellona, url dinamico in base ai dati passati in richiesta
 
 
-function findCoordinates(data) {
+async function cercaShop(query) {
     
-    return data.map(place => {
-        let latitude = place.lat;
-        let longitude = place.lon;
-        return [Number(latitude) , Number(longitude)];
-    });
+    
+    try {
+        const response = await fetch(query);
+        
+        // First control
+        if (!response.ok) {
+            throw new Error(`Errore Server: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        return data.elements || []; // Restituisci array vuoto se elements manca
+        
+    } catch (error) {
+        console.error("Errore nel recupero dati:", error);
+        return []; // control 2 (everytime he return an array)
+    }
 }
 
 
 
 
-
-
-// active effect categories menu
+// active effect categories menu // fixit
 
 
 
