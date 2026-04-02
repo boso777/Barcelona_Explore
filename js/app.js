@@ -1,4 +1,3 @@
-let searchbar = document.getElementById('search');
 let submit = document.getElementById('submitResearch');
 let links = document.querySelectorAll('.custom-tag');
 let cityZone = document.getElementById('cityZone');
@@ -58,7 +57,7 @@ zone.forEach((el)  => {
 cat.forEach((el)  => {
     let newCat = document.createElement('li');
     newCat.classList.add(`catSelector`)
-    newCat.innerHTML = `<a class="dropdown-item catItem" data-name="${el.name}">${el.name}</a>`
+    newCat.innerHTML = `<a class="dropdown-item catItem" data-name="${el.id}">${el.name}</a>`
     categoryContainer.appendChild(newCat);
 });
 
@@ -81,13 +80,15 @@ categoryContainer.addEventListener('click' , (el)=>{
 
         el.preventDefault();
         let selectedCat = el.target.getAttribute('data-name');
-        dropdownCat.innerHTML = selectedCat;
+        let selectedCatName = el.target.innerHTML;
+        console.log(selectedCatName);
+        dropdownCat.innerHTML = selectedCatName;
     }
 })
 
 let data = "";
 
-// 3 event listner con callback asincrona (aspetta che finisca l'operazione await per passare a step successivo)
+// 3 event listener con callback asincrona (aspetta che finisca l'operazione await per passare a step successivo)
 
 submit.addEventListener('click', async () => {
 
@@ -101,7 +102,7 @@ submit.addEventListener('click', async () => {
     
     const urlDef = baseUrl + encodeURIComponent(query);
 
-// fix-it continuare da qui, dati salvati in data
+
 
     data = await cercaShop(urlDef);
     
