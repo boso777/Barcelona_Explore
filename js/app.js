@@ -27,6 +27,21 @@ const markersLayer = L.layerGroup().addTo(map);
 L.control.zoom({position: 'bottomleft'}).addTo(map);
 
 
+// icon control
+
+let geoPoint = L.icon({
+    iconUrl: 'media/location-dot-solid.png',
+    shadowUrl: 'media/location-dot-solid.png',
+
+    iconSize:     [38, 38], // size of the icon
+    shadowSize:   [0, 0], // size of the shadow
+    iconAnchor:   [22, 94], // point of the icon which will correspond to marker's location
+    shadowAnchor: [0, 0],  // the same for the shadow
+    popupAnchor:  [-3, -76] // point from which the popup should open relative to the iconAnchor
+});
+
+
+
 let selectedZone = "";
 let selectedCategory = "";
 
@@ -70,7 +85,7 @@ categoryContainer.addEventListener('click' , (el)=>{
     }
 })
 
-
+let data = "";
 
 // 3 event listner con callback asincrona (aspetta che finisca l'operazione await per passare a step successivo)
 
@@ -80,7 +95,7 @@ submit.addEventListener('click', async () => {
     selectedCategory = dropdownCat.innerHTML;
     selectedZone = dropdownZone.innerHTML;
     
-    const query = `[out:json];area["name"="Barcelona"]["admin_level"="8"]->.city;area["name"="${selectedZone}"](area.city)->.searchArea;node["amenity"="${selectedCategory}"](area.searchArea);out 10;`;
+    const query = `[out:json];area["name"="Barcelona"]["admin_level"="8"]->.city;area["name"="${selectedZone}"](area.city)->.searchArea;node["amenity"="${selectedCategory}"](area.searchArea);out 100;`;
     
     const baseUrl = "https://overpass-api.de/api/interpreter?data=";
     
@@ -88,19 +103,12 @@ submit.addEventListener('click', async () => {
 
 // fix-it continuare da qui, dati salvati in data
 
-    let data = await cercaShop(urlDef);
-    console.log(data);
+    data = await cercaShop(urlDef);
+    
+    addPointer(data);
 });
 
-
-
-
-
-
-// fetch() a Overpass API
-
 // chiamata api per json attivià barcellona, url dinamico in base ai dati passati in richiesta
-
 
 async function cercaShop(query) {
     
@@ -123,11 +131,34 @@ async function cercaShop(query) {
 }
 
 
+// 4 function who print target on the map 
+
+function addPointer(data){
+
+   markersLayer.clearLayers();
+    
+    data.forEach(place => {
+        let lat = place.lat;
+        let lon = place.lon;
+        L.marker([lat , lon], {icon: geoPoint}).addTo(markersLayer);
+    });
+
+    
+
+}
+
+
+
+
+
+
+
+
+
+
 
 
 // active effect categories menu // fixit
-
-
 
 links.forEach(link => {
     link.addEventListener('click', function() {
