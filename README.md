@@ -1,10 +1,11 @@
-# Barcelona Explore 🗺️
+# Barcelona Explore (No Vibecoding) 🗺️
 
 ## Github pages link
 
 https://boso777.github.io/Barcelona_Explore/
 
 A dynamic web application designed to help users discover commercial activities and points of interest in Barcelona using real-time geographic data. This project serves as a personal sandbox to refine **Frontend Design** and **API Integration** skills.
+No vibecoding involved in the making of this, made just for the sake of doing it!
 
 > **Status:** 🚧 Work in Progress (Active Development)
 
