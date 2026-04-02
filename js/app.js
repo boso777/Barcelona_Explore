@@ -46,7 +46,6 @@ let selectedCategory = "";
 
 // 1 - cicle for each element of the DB, create -> appends childs // fix-it make a function for both
 
-
 zone.forEach((el)  => {
     let newZone = document.createElement('li');
     newZone.classList.add(`zoneSelector`)
@@ -60,8 +59,6 @@ cat.forEach((el)  => {
     newCat.innerHTML = `<a class="dropdown-item catItem" data-name="${el.id}">${el.name}</a>`
     categoryContainer.appendChild(newCat);
 });
-
-
 
 // 2-  event listener on click capture the inpute of the user a modify the dropdown text //  fix-it make a function for both
 
@@ -102,8 +99,6 @@ submit.addEventListener('click', async () => {
     
     const urlDef = baseUrl + encodeURIComponent(query);
 
-
-
     data = await cercaShop(urlDef);
     
     addPointer(data);
@@ -112,8 +107,7 @@ submit.addEventListener('click', async () => {
 // chiamata api per json attivià barcellona, url dinamico in base ai dati passati in richiesta
 
 async function cercaShop(query) {
-    
-    
+        
     try {
         const response = await fetch(query);
         
@@ -131,7 +125,6 @@ async function cercaShop(query) {
     }
 }
 
-
 // 4 function who print target on the map 
 
 function addPointer(data){
@@ -143,9 +136,6 @@ function addPointer(data){
         let lon = place.lon;
         L.marker([lat , lon], {icon: geoPoint}).addTo(markersLayer);
     });
-
-    
-
 }
 
 
