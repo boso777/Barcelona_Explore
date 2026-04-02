@@ -1,28 +1,14 @@
-let searchbar = document.getElementById('search');
 let submit = document.getElementById('submitResearch');
 let links = document.querySelectorAll('.custom-tag');
+let cityZone = document.getElementById('cityZone');
+let dropdownZone = document.getElementById('dropdownZone');
+let dropdownCat = document.getElementById('dropdownCat');
+let categoryContainer = document.getElementById('categoryContainer');
 
-async function cercaShop(category) {
-    const baseUrl = "https://overpass-api.de/api/interpreter?data=";
-    const query = `[out:json];node["amenity"="${category}"](41.382, 2.165, 41.392, 2.175);out 100;`;
-    const urlDef = baseUrl + encodeURIComponent(query);
-    
-    try {
-        const response = await fetch(urlDef);
-        
-        // First control
-        if (!response.ok) {
-            throw new Error(`Errore Server: ${response.status}`);
-        }
+// import local data from js element
 
-        const data = await response.json();
-        return data.elements || []; // Restituisci array vuoto se elements manca
-        
-    } catch (error) {
-        console.error("Errore nel recupero dati:", error);
-        return []; // control 2 (everytime he return an array)
-    }
-}
+import { zone } from './neighboroud.js';
+import { cat } from './categories.js';
 
 
 // mappa di barcellona , zoom control spostato in basso a sx
@@ -38,48 +24,128 @@ L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
 const markersLayer = L.layerGroup().addTo(map);
 
 L.control.zoom({position: 'bottomleft'}).addTo(map);
-console.log(L.control.zoom);
 
-// funzione richiesta
 
-//event listner con callback asincrona (aspetta che finisca l'operazione await per passare a step successivo)
+// icon control
+
+let geoPoint = L.icon({
+    iconUrl: 'media/location-dot-solid.png',
+    shadowUrl: 'media/location-dot-solid.png',
+
+    iconSize:     [38, 38], // size of the icon
+    shadowSize:   [0, 0], // size of the shadow
+    iconAnchor:   [22, 94], // point of the icon which will correspond to marker's location
+    shadowAnchor: [0, 0],  // the same for the shadow
+    popupAnchor:  [-3, -76] // point from which the popup should open relative to the iconAnchor
+});
+
+
+
+let selectedZone = "";
+let selectedCategory = "";
+
+// 1 - cicle for each element of the DB, create -> appends childs // fix-it make a function for both
+
+
+zone.forEach((el)  => {
+    let newZone = document.createElement('li');
+    newZone.classList.add(`zoneSelector`)
+    newZone.innerHTML = `<a class="dropdown-item zoneItem" data-name="${el.name}">${el.name}</a>`
+    cityZone.appendChild(newZone);
+});
+
+cat.forEach((el)  => {
+    let newCat = document.createElement('li');
+    newCat.classList.add(`catSelector`)
+    newCat.innerHTML = `<a class="dropdown-item catItem" data-name="${el.id}">${el.name}</a>`
+    categoryContainer.appendChild(newCat);
+});
+
+
+
+// 2-  event listener on click capture the inpute of the user a modify the dropdown text //  fix-it make a function for both
+
+cityZone.addEventListener('click' , (el)=> {
+    if(el.target.classList.contains('zoneItem')){
+        
+        el.preventDefault();
+        let selectedElement = el.target.getAttribute('data-name');
+        dropdownZone.innerHTML = selectedElement;
+    }
+})
+
+
+categoryContainer.addEventListener('click' , (el)=>{
+    if(el.target.classList.contains('catItem')){
+
+        el.preventDefault();
+        let selectedCat = el.target.getAttribute('data-name');
+        let selectedCatName = el.target.innerHTML;
+        console.log(selectedCatName);
+        dropdownCat.innerHTML = selectedCatName;
+    }
+})
+
+let data = "";
+
+// 3 event listener con callback asincrona (aspetta che finisca l'operazione await per passare a step successivo)
+
 submit.addEventListener('click', async () => {
 
     markersLayer.clearLayers();
-    let categoria = searchbar.value.toLowerCase();    
-    await findBySearchbar(categoria);
+    selectedCategory = dropdownCat.innerHTML;
+    selectedZone = dropdownZone.innerHTML;
+    
+    const query = `[out:json];area["name"="Barcelona"]["admin_level"="8"]->.city;area["name"="${selectedZone}"](area.city)->.searchArea;node["amenity"="${selectedCategory}"](area.searchArea);out 100;`;
+    
+    const baseUrl = "https://overpass-api.de/api/interpreter?data=";
+    
+    const urlDef = baseUrl + encodeURIComponent(query);
 
+
+
+    data = await cercaShop(urlDef);
+    
+    addPointer(data);
 });
-
-async function findBySearchbar(cat){
-
-    let dataset = await cercaShop(cat);
-    
-    let coordinates = findCoordinates(dataset);
-    
-    coordinates.forEach(coordinate => {
-
-        let circle = L.circle([Number(coordinate[0]),Number(coordinate[1])], {
-        color: 'red',
-        fillColor: '#f03',
-        fillOpacity: 0.5,
-        radius: 10
-    }).addTo(markersLayer);
-
-    });
-
-}
 
 // chiamata api per json attivià barcellona, url dinamico in base ai dati passati in richiesta
 
-
-function findCoordinates(data) {
+async function cercaShop(query) {
     
-    return data.map(place => {
-        let latitude = place.lat;
-        let longitude = place.lon;
-        return [Number(latitude) , Number(longitude)];
+    
+    try {
+        const response = await fetch(query);
+        
+        // First control
+        if (!response.ok) {
+            throw new Error(`Errore Server: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        return data.elements || []; // Restituisci array vuoto se elements manca
+        
+    } catch (error) {
+        console.error("Errore nel recupero dati:", error);
+        return []; // control 2 (everytime he return an array)
+    }
+}
+
+
+// 4 function who print target on the map 
+
+function addPointer(data){
+
+   markersLayer.clearLayers();
+    
+    data.forEach(place => {
+        let lat = place.lat;
+        let lon = place.lon;
+        L.marker([lat , lon], {icon: geoPoint}).addTo(markersLayer);
     });
+
+    
+
 }
 
 
@@ -87,14 +153,16 @@ function findCoordinates(data) {
 
 
 
-// active effect categories menu
 
 
+
+
+
+
+// active effect categories menu // fixit
 
 links.forEach(link => {
     link.addEventListener('click', function() {
-        console.log('ciao');
-        
         links.forEach(l => l.classList.remove('custom-tag-active'));
         this.classList.add('custom-tag-active');
     });
