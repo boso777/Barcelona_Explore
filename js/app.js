@@ -78,7 +78,6 @@ categoryContainer.addEventListener('click' , (el)=>{
         el.preventDefault();
         let selectedCat = el.target.getAttribute('data-name');
         let selectedCatName = el.target.innerHTML;
-        console.log(selectedCatName);
         dropdownCat.innerHTML = selectedCatName;
     }
 })
